@@ -15,6 +15,8 @@ git clone https://github.com/spring-projects/spring-petclinic.git
 cd spring-petclinic
 ./mvnw package
 java -jar target/*.jar
+
+#test
 ```
 
 You can then access the Petclinic at <http://localhost:8080/>.
