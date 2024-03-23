@@ -48,18 +48,18 @@ pipeline {
 
         stage('docker image push') {
             steps {
-                withDockerRegistry(credentialsId: 'dockercred', url: '') {
+                withDockerRegistry(credentialsId: 'Docker-hub', url: '') {
                     sh "docker push siddeo10/petapp:${BUILD_NUMBER}"
                 }
             }
         }
 
 
-        stage('Publish build info') {
+        //stage('Publish build info') {
             steps {
                 jf 'rt build-publish'
             }
-        }
+        //}
 
        stage('push artifact') {
             steps {
