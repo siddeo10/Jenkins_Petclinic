@@ -61,13 +61,13 @@ pipeline {
             }
         //}
 
-       stage('push artifact') {
+       //stage('push artifact') {
             steps {
               jf 'rt u /var/lib/jenkins/workspace/pipeline_part2/target/spring-petclinic-3.2.0-SNAPSHOT.jar  petclinic_artifact-libs-snapshot-local/springpetclinic/spring-petclinic-3.2.0-SNAPSHOT.jar'
 
 
             }
-        }
+       // }
 
 
      
