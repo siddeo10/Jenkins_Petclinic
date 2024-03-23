@@ -1,52 +1,25 @@
 pipeline {
     agent any
   
-      tools {
+    tools {
         jfrog 'jfrog-cli'
-      }
+    }
 
-    stages {
-        //stage('snyk scan') {
+        stage('Maven build artifact') {
             steps {
-                snykSecurity(
-                    snykInstallation: 'snyk@latest',
-                    snykTokenId: 'snyk_api_token',
-                    monitorProjectOnBuild: false,
-                    failOnIssues: false,  // Use boolean for failOnIssues
-                    additionalArguments: '--json-file-output=all-vulnerabilities.json'
-                )
-            }
-       // }
-
-        stage('maven build artifact') {
-            steps {
-              // jf 'mvn-config --petclinic_artifact-libs-release --petclinic_artifact-libs-snapshot --petclinic_artifact-libs-release-local --petclinic_artifact-libs-snapshot-local'
-
-
-                 sh 'mvn clean package -DskipTests=true '  // Correct capitalization for -DskipTests
+                sh 'mvn clean package -DskipTests=true'
             }
         }
 
 
-       //stage('TRIVY FS SCAN') {
-            steps {
-                sh "trivy fs . > trivyfs.txt"
-            }
-       // }
-
-       stage('building a docker image') {
+        stage('Building a Docker image') {
             steps {
                 sh "docker build -t siddeo10/petapp:${BUILD_NUMBER} ."
             }
         }
 
-      // stage("TRIVY"){
-            steps{
-                sh "trivy image  siddeo10/petapp:${BUILD_NUMBER} --scanners vuln > trivyimage.txt" 
-            }
-        //}
 
-        stage('docker image push') {
+        stage('Docker image push') {
             steps {
                 withDockerRegistry(credentialsId: 'Docker-hub', url: '') {
                     sh "docker push siddeo10/petapp:${BUILD_NUMBER}"
@@ -55,25 +28,10 @@ pipeline {
         }
 
 
-        //stage('Publish build info') {
+        stage('Push artifact') {
             steps {
-                jf 'rt build-publish'
+                jf 'rt u /var/lib/jenkins/workspace/pipeline_part2/target/spring-petclinic-3.2.0-SNAPSHOT.jar petclinic_artifact-libs-snapshot-local/springpetclinic/spring-petclinic-3.2.0-SNAPSHOT.jar'
             }
-        //}
-
-       //stage('push artifact') {
-            steps {
-              jf 'rt u /var/lib/jenkins/workspace/pipeline_part2/target/spring-petclinic-3.2.0-SNAPSHOT.jar  petclinic_artifact-libs-snapshot-local/springpetclinic/spring-petclinic-3.2.0-SNAPSHOT.jar'
-
-
-            }
-       // }
-
-
-     
-
-
-
-        
+        }
     }
 }
